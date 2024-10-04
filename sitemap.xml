@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="https://blog.vadrwave.ch/sitemap.xsl"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+<url>
+<loc>https://blog.vadrwave.ch/</loc>
+</url>
+<url>
+<loc>https://blog.vadrwave.ch/about.html</loc>
+<lastmod>2024-10-04T10:29:06+02:00</lastmod>
+<image:image>
+<image:loc>https://blog.vadrwave.ch/media/posts/1/tyjvafvxtkc8knj5oi4h.png</image:loc>
+<image:title><![CDATA[]]></image:title>
+</image:image>
+</url>
+<url>
+<loc>https://blog.vadrwave.ch/the-scary-side-of-cybersecurity-halloween-edition.html</loc>
+<lastmod>2024-10-04T10:34:57+02:00</lastmod>
+</url>
+</urlset>
