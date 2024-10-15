@@ -1,0 +1,717 @@
+<!DOCTYPE html><html lang="en-gb" data-theme="graphite-green"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Set up your own Evilginx Proxy - vadrwave.ch</title><meta name="description" content="In this post, we are going to create a Ubuntu VM on Azure with Evilginx, which is going to be used as a MiTM/AiTM Proxy. If you don't know what AiTM is, here you can get a quick overview. I got myself the information out of Jan Bakker's Blog posts,&hellip;"><meta name="generator" content="Publii Open-Source CMS for Static Site"><link rel="stylesheet" href="https://blog.vadrwave.ch/media/plugins/syntaxHighlighter/prism-black.css"><link rel="stylesheet" href="https://blog.vadrwave.ch/media/plugins/syntaxHighlighter/prism-inline-color.css"><script type="gdpr-blocker/analytics" async src="https://www.googletagmanager.com/gtag/js?id=G-J5XYR8C46R"></script><script type="gdpr-blocker/analytics">window.dataLayer = window.dataLayer || [];
+				  function gtag(){dataLayer.push(arguments);}
+				  gtag('js', new Date());
+				  gtag('config', 'G-J5XYR8C46R' );</script><link rel="canonical" href="https://blog.vadrwave.ch/set-up-your-own-evilginx-proxy/"><meta property="og:title" content="Set up your own Evilginx Proxy"><meta property="og:image" content="https://blog.vadrwave.ch/media/posts/5/DALLE-2024-10-15-13.06.26-An-illustration-of-an-Evilginx-phishing-attack.-On-the-left-a-user-or-laptop-is-shown-trying-to-log-into-a-website.-In-the-middle-the-Evilginx-serve.png"><meta property="og:image:width" content="1024"><meta property="og:image:height" content="1024"><meta property="og:site_name" content="vadrwave.ch"><meta property="og:description" content="In this post, we are going to create a Ubuntu VM on Azure with Evilginx, which is going to be used as a MiTM/AiTM Proxy. If you don't know what AiTM is, here you can get a quick overview. I got myself the information out of Jan Bakker's Blog posts,&hellip;"><meta property="og:url" content="https://blog.vadrwave.ch//set-up-your-own-evilginx-proxy/"><meta property="og:type" content="article"><link rel="alternate" type="application/atom+xml" href="https://blog.vadrwave.ch/feed.xml"><link rel="alternate" type="application/json" href="https://blog.vadrwave.ch/feed.json"><link rel="stylesheet" href="https://blog.vadrwave.ch/assets/css/style.css?v=8761f0970b957aef9754b812fd405f4e"><link rel="stylesheet" href="https://blog.vadrwave.ch/assets/css/photoswipe.css?v=151447f0cf3c9ef292a571bc74c9472c"><script type="application/ld+json">{"@context":"http://schema.org","@type":"Article","mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.vadrwave.ch/set-up-your-own-evilginx-proxy/"},"headline":"Set up your own Evilginx Proxy","datePublished":"2024-10-15T13:12","dateModified":"2024-10-15T15:20","image":{"@type":"ImageObject","url":"https://blog.vadrwave.ch/media/posts/5/DALLE-2024-10-15-13.06.26-An-illustration-of-an-Evilginx-phishing-attack.-On-the-left-a-user-or-laptop-is-shown-trying-to-log-into-a-website.-In-the-middle-the-Evilginx-serve.png","height":1024,"width":1024},"description":"In this post, we are going to create a Ubuntu VM on Azure with Evilginx, which is going to be used as a MiTM/AiTM Proxy. If you don't know what AiTM is, here you can get a quick overview. I got myself the information out of Jan Bakker's Blog posts,&hellip;","author":{"@type":"Person","name":"Roman","url":"https://blog.vadrwave.ch/authors/roman/"},"publisher":{"@type":"Organization","name":"Roman","logo":{"@type":"ImageObject","url":"https://blog.vadrwave.ch/media/website/vadrwave_transparent-.png","height":1200,"width":1200}}}</script><noscript><style>img[loading] {
+                    opacity: 1;
+                }</style></noscript><link rel="stylesheet" href="https://blog.vadrwave.ch/media/plugins/docSearch/docsearch.min.css"></head><body class="post-template"><header class="header" id="js-header"><div><a class="logo" href="https://blog.vadrwave.ch/"><img src="https://blog.vadrwave.ch/media/website/vadrwave_transparent-.png" alt="vadrwave.ch" width="1200" height="1200"></a><nav class="navbar js-navbar"><button class="navbar__toggle js-toggle" aria-label="Menu" aria-haspopup="true" aria-expanded="false"><span class="navbar__toggle-box"><span class="navbar__toggle-inner">Menu</span></span></button><ul class="navbar__menu"><li><a href="https://blog.vadrwave.ch/about/" target="_self">About</a></li><li class="has-submenu"><a href="https://blog.vadrwave.ch/tags/intune/" target="_self" aria-haspopup="true">Security</a><ul class="navbar__submenu level-2" aria-hidden="true"><li><a href="https://blog.vadrwave.ch/secure-yourself-against-aitm-threads/" target="_self">AiTM</a></li></ul></li></ul></nav><div class="search"><div class="search__overlay js-search-overlay"><div id="docsearch" style="display: none;"></div></div><button class="search__btn js-search-btn" aria-label="Search"><svg height="17" width="17"><use xlink:href="https://blog.vadrwave.ch/assets/svg/svg-map.svg#search"/></svg></button></div></div></header><main class="post"><article class="content"><header class="content__inner content__header--centered"><h1 class="h0 content__title">Set up your own Evilginx Proxy</h1><div class="content__meta"><div class="content__meta__author"><img src="https://blog.vadrwave.ch/media/website/AvatarMaker.png" loading="eager" height="400" width="400" class="content__avatar" alt="Roman"><div><a href="https://blog.vadrwave.ch/authors/roman/" class="content__author">Roman</a> <time datetime="2024-10-15T13:12" class="content__date">October 15, 2024</time></div></div></div></header><div class="content__body"><div class="content__inner"><figure class="content__featured-image"><img src="https://blog.vadrwave.ch/media/posts/5/DALLE-2024-10-15-13.06.26-An-illustration-of-an-Evilginx-phishing-attack.-On-the-left-a-user-or-laptop-is-shown-trying-to-log-into-a-website.-In-the-middle-the-Evilginx-serve.png" srcset="https://blog.vadrwave.ch/media/posts/5/responsive/DALLE-2024-10-15-13.06.26-An-illustration-of-an-Evilginx-phishing-attack.-On-the-left-a-user-or-laptop-is-shown-trying-to-log-into-a-website.-In-the-middle-the-Evilginx-serve-xs.png 300w, https://blog.vadrwave.ch/media/posts/5/responsive/DALLE-2024-10-15-13.06.26-An-illustration-of-an-Evilginx-phishing-attack.-On-the-left-a-user-or-laptop-is-shown-trying-to-log-into-a-website.-In-the-middle-the-Evilginx-serve-sm.png 480w, https://blog.vadrwave.ch/media/posts/5/responsive/DALLE-2024-10-15-13.06.26-An-illustration-of-an-Evilginx-phishing-attack.-On-the-left-a-user-or-laptop-is-shown-trying-to-log-into-a-website.-In-the-middle-the-Evilginx-serve-md.png 768w, https://blog.vadrwave.ch/media/posts/5/responsive/DALLE-2024-10-15-13.06.26-An-illustration-of-an-Evilginx-phishing-attack.-On-the-left-a-user-or-laptop-is-shown-trying-to-log-into-a-website.-In-the-middle-the-Evilginx-serve-xl.png 1200w" sizes="(max-width: 1200px) 100vw, 1200px" loading="eager" height="1024" width="1024" alt=""></figure><div class="content__entry"><p>In this post, we are going to create a Ubuntu VM on Azure with Evilginx, which is going to be used as a MiTM/AiTM Proxy.</p><p>If you don't know what AiTM is, <a href="https://blog.vadrwave.ch/secure-yourself-against-aitm-threads/">here </a>you can get a quick overview.</p><p>I got myself the information out of <a href="https://janbakker.tech/" target="_blank">Jan Bakker's</a> Blog posts, which are propably the best you will ever find covering this topic. Later in this Post, we will use Jan Bakker's phishlets.</p><p>Before we can start we do have some</p><h3 id="requirementsandnbsp">Requirements&nbsp;</h3><ul><ul><li>Azure Subscription</li><li>just a little knowledge of Azure and Ubuntu</li><li>a Domain for Testing</li><li>configurable DNS management</li><li>SSH&nbsp;</li></ul></ul><h3 id="create-azure-virtual-machine">Create Azure Virtual Machine</h3><p>Head with the browser of your choice to&nbsp;<a href="https://portal.azure.com/#browse/Microsoft.Compute%2FVirtualMachines">https://portal.azure.com/</a>&nbsp;and start creating a virtual machine.</p><figure class="post__image post__image--center"><img loading="lazy" src="https://blog.vadrwave.ch/media/posts/5/Screenshot-2024-10-15-135040.png" height="387" width="506" alt="" sizes="(max-width: 1200px) 100vw, 1200px" srcset="https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-135040-xs.png 300w, https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-135040-sm.png 480w, https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-135040-md.png 768w, https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-135040-xl.png 1200w"></figure><p>&nbsp;Choose your Subscription and your Resource group.&nbsp;<br>&nbsp;Give it a nicerdicer Name and choose the desired Region.<br>&nbsp;Be aware of the VM Size we are choosing - they are not available in all regions.<br>&nbsp;<br></p><figure class="post__image post__image--center"><img loading="lazy" src="https://blog.vadrwave.ch/media/posts/5/Screenshot-2024-10-15-135313.png" height="674" width="786" alt="" sizes="(max-width: 1200px) 100vw, 1200px" srcset="https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-135313-xs.png 300w, https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-135313-sm.png 480w, https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-135313-md.png 768w, https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-135313-xl.png 1200w"></figure><p>Evilginx requires at least 1GB of RAM and 1 CPU.</p><p>For testing purposes, I am using the B1s machine to reduce costs. If I find that the machine is slow like a snake, I can upgrade to the B2s machine, which has 2 vCPU cores and 4GB of RAM. However, this upgrade will also increase costs very mucho!</p><figure class="post__image post__image--center"><img loading="lazy" src="https://blog.vadrwave.ch/media/posts/5/Screenshot-2024-10-15-135752.png" height="636" width="798" alt="" sizes="(max-width: 1200px) 100vw, 1200px" srcset="https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-135752-xs.png 300w, https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-135752-sm.png 480w, https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-135752-md.png 768w, https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-135752-xl.png 1200w"></figure><p>We are going to create a public SSH key to connect later via SSH.&nbsp;<br>Choose your Username as you want.</p><p>For the public inbound port, we are going to configure them later.</p><p>As for the Disks, you can leave it how it is. If you want to save some good old bucks, you can choose Standard SSD instead of Premium SSD.</p><figure class="post__image post__image--center"><img loading="lazy" src="https://blog.vadrwave.ch/media/posts/5/Screenshot-2024-10-15-140433.png" height="668" width="805" alt="" sizes="(max-width: 1200px) 100vw, 1200px" srcset="https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-140433-xs.png 300w, https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-140433-sm.png 480w, https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-140433-md.png 768w, https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-140433-xl.png 1200w"></figure><p>On the Network config form, just check the "Delete Public IP and NIC when VM is deleted."</p><figure class="post__image post__image--center"><img loading="lazy" src="https://blog.vadrwave.ch/media/posts/5/Screenshot-2024-10-15-140552.png" height="862" width="802" alt="" sizes="(max-width: 1200px) 100vw, 1200px" srcset="https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-140552-xs.png 300w, https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-140552-sm.png 480w, https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-140552-md.png 768w, https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-140552-xl.png 1200w"></figure><p>You can now skip the management part and go straight to monitoring.</p><figure class="post__image post__image--center"><img loading="lazy" src="https://blog.vadrwave.ch/media/posts/5/Screenshot-2024-10-15-140701.png" height="773" width="794" alt="" sizes="(max-width: 1200px) 100vw, 1200px" srcset="https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-140701-xs.png 300w, https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-140701-sm.png 480w, https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-140701-md.png 768w, https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-140701-xl.png 1200w"></figure><p>Monitoring: Just disable those lame Boot diagnostics</p><figure class="post__image post__image--center"><img loading="lazy" src="https://blog.vadrwave.ch/media/posts/5/Screenshot-2024-10-15-140824.png" height="405" width="707" alt="" sizes="(max-width: 1200px) 100vw, 1200px" srcset="https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-140824-xs.png 300w, https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-140824-sm.png 480w, https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-140824-md.png 768w, https://blog.vadrwave.ch/media/posts/5/responsive/Screenshot-2024-10-15-140824-xl.png 1200w"></figure><p>Now we can go directly to Review and Create, since the rest does not care us.</p><p class="msg msg--info">When you press Create, a popup will appear to ‘Generate a new key pair’, which gives you the option to download the private key and create the resource. Make sure to download the .pem file and keep it safe.<br></p><p>Finally, our VM is now created. In the next Step we will do the needed Network Settings.</p><h4 id="network-settings">Network Settings</h4><p>Evilginx uses following port so we need to configure Azure VM network for these settings. I have included port 80 to my configuration for testing purposes.</p><p class="msg msg--highlight"><strong>TCP&nbsp; 443&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Reverse proxy HTTPS traffic<br>TCP&nbsp; 22&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;SSH port for remote configuration (can be changed to anything)<br>UDP&nbsp; 53&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;DNS nameserver traffic used for hostname resolution</strong></p><p>We are going to add those rules, so we should be able to connect after that.</p><div class="gallery-wrapper gallery-wrapper--wide"><div class="gallery" data-columns="2"><figure class="gallery__item"><a href="https://blog.vadrwave.ch/media/posts/5/gallery/Screenshot-2024-10-15-145625.png" data-size="561x783"><img loading="lazy" src="https://blog.vadrwave.ch/media/posts/5/gallery/Screenshot-2024-10-15-145625-thumbnail.png" height="783" width="561" alt=""></a></figure><figure class="gallery__item"><a href="https://blog.vadrwave.ch/media/posts/5/gallery/Screenshot-2024-10-15-145641.png" data-size="580x950"><img loading="lazy" src="https://blog.vadrwave.ch/media/posts/5/gallery/Screenshot-2024-10-15-145641-thumbnail.png" height="950" width="580" alt=""></a></figure></div></div><h4 id="dns-config">DNS Config</h4><p>To set up Evilginx, we need some DNS Records.&nbsp;<br>First of all you will need an A Record point to "login.&lt;yourdomain&gt;" to you Azure VM Public IP.&nbsp;<br>DNS Setup will be different from Provider to Provider. I am Using a Swiss Product here "<u>Infomaniak</u>".<br></p><p>It should then look something like this:</p><figure class="post__image post__image--center"><img loading="lazy" src="https://blog.vadrwave.ch/media/posts/5/image.png" height="591" width="1192" alt="" sizes="(max-width: 1200px) 100vw, 1200px" srcset="https://blog.vadrwave.ch/media/posts/5/responsive/image-xs.png 300w, https://blog.vadrwave.ch/media/posts/5/responsive/image-sm.png 480w, https://blog.vadrwave.ch/media/posts/5/responsive/image-md.png 768w, https://blog.vadrwave.ch/media/posts/5/responsive/image-xl.png 1200w"></figure><h3 id="ssh-to-the-virtual-machineandnbsp">SSH to the Virtual Machine&nbsp;</h3><p>How you want to connect will depend on your Style. Cou can either use WSL, a Linux Client, Powershell oder any other SSH tool you like.<br>I am going to use Powershell.&nbsp;</p><p>Get the Path where you saved you .pem Key and add it on Step 3. It should look like this:<br><br></p><figure class="post__image post__image--center"><img loading="lazy" src="https://blog.vadrwave.ch/media/posts/5/2024-10-15-15_07_51-Native-SSH-Microsoft-Azure-und-2-weitere-Seiten-Profil-1-Microsoft-Edge.png" height="696" width="586" alt="" sizes="(max-width: 1200px) 100vw, 1200px" srcset="https://blog.vadrwave.ch/media/posts/5/responsive/2024-10-15-15_07_51-Native-SSH-Microsoft-Azure-und-2-weitere-Seiten-Profil-1-Microsoft-Edge-xs.png 300w, https://blog.vadrwave.ch/media/posts/5/responsive/2024-10-15-15_07_51-Native-SSH-Microsoft-Azure-und-2-weitere-Seiten-Profil-1-Microsoft-Edge-sm.png 480w, https://blog.vadrwave.ch/media/posts/5/responsive/2024-10-15-15_07_51-Native-SSH-Microsoft-Azure-und-2-weitere-Seiten-Profil-1-Microsoft-Edge-md.png 768w, https://blog.vadrwave.ch/media/posts/5/responsive/2024-10-15-15_07_51-Native-SSH-Microsoft-Azure-und-2-weitere-Seiten-Profil-1-Microsoft-Edge-xl.png 1200w"></figure><p>Now you can copy the whole SSH command and just paste it to your Poweshell.</p><h3 id="evilginx-installation-andamp-configuration">Evilginx installation &amp; configuration</h3><p>First, we all now what comes first on Linux. Make sure everything is up to date and we have the latest patches.</p><pre class="line-numbers language-bash"><code># Update ubuntu
+sudo apt update
+sudo apt upgrade -y 
+
+# install tools
+sudo apt install wget make git -y 
+
+# Stop dns resolver
+sudo systemctl stop systemd-resolved</code></pre><p>To edit and add DNS servers, open the /etc/resolv.conf file using the following command</p><pre class="line-numbers language-bash"><code>sudo nano /etc/resolv.conf
+</code></pre><p>Comment out the nameserver you have in there and add the Nameserver you love most ❤️ - i choose Cloudflare.&nbsp;<br><strong>Cloudflare: 1.1.1.1, 1.0.0.2</strong><br></p><p>It should then look something like this:</p><pre class="line-numbers language-bash"><code>#nameserver 127.0.0.53
+nameserver 1.1.1.1
+nameserver 1.0.0.2</code></pre><p>Then we need to add our client to the hosts.</p><p>Open Hosts file</p><pre class="line-numbers language-bash"><code>sudo nano /etc/hosts</code></pre><p>Add 127.0.1.1 NameOfYouEvilginx under 127.0.0.1</p><pre class="line-numbers language-bash"><code>127.0.0.1 localhost
+127.0.1.1 evilginx-vadrwave
+</code></pre><h4 id="software-install">Software Install</h4><p>Download and install GO</p><pre class="line-numbers language-bash"><code># Download Go 
+wget https://go.dev/dl/go1.22.3.linux-amd64.tar.gz
+
+# Extract packages
+sudo tar -zxvf go1.22.3.linux-amd64.tar.gz -C /usr/local/
+
+# configure Path environment
+echo "export PATH=/usr/local/go/bin:${PATH}" | sudo tee /etc/profile.d/go.sh
+
+source /etc/profile.d/go.sh
+
+# Clone and compile from source
+git clone https://github.com/kgretzky/evilginx2.git 
+cd evilginx2 
+make
+
+# Create folders
+sudo mkdir -p /usr/share/evilginx/phishlets
+sudo mkdir -p /usr/share/evilginx/redirectors
+
+# Copy content
+sudo cp ./phishlets/* /usr/share/evilginx/phishlets/ -r
+sudo cp ./redirectors/* /usr/share/evilginx/redirectors/ -r
+
+# Set evilginx as executable and copy it to /us/local/bin
+sudo chmod 700 ./build/evilginx
+sudo cp ./build/evilginx /usr/local/bin/
+
+# Download phishlet from Jan Bakker
+sudo wget https://raw.githubusercontent.com/BakkerJan/evilginx3/refs/heads/main/microsoft365.yaml -P /usr/share/evilginx/phishlets/
+</code></pre><p>Phuuu - almost done...</p><p>With the following command - we are finally able to run our little hackermachine. 🧑‍💻</p><figure class="post__image post__image--full"><img loading="lazy" src="https://blog.vadrwave.ch/media/posts/5/1640519717209.png" height="1278" width="1022" alt="" sizes="(max-width: 1200px) 100vw, 1200px" srcset="https://blog.vadrwave.ch/media/posts/5/responsive/1640519717209-xs.png 300w, https://blog.vadrwave.ch/media/posts/5/responsive/1640519717209-sm.png 480w, https://blog.vadrwave.ch/media/posts/5/responsive/1640519717209-md.png 768w, https://blog.vadrwave.ch/media/posts/5/responsive/1640519717209-xl.png 1200w"></figure><hr class="separator separator--dots"><p><strong>Disclaimer</strong><br>This post is intended for educational and demonstration purposes only. It contains information related to ethical hacking, also known as penetration testing. Ethical hacking involves assessing the security of computer systems, networks, accounts, and devices with proper authorization. Hacking without proper consent is unethical, illegal, and can lead to legal trouble</p></div><footer class="content__footer"><div class="content__updated">Updated: <time datetime="2024-10-15T15:20">October 15, 2024</time></div><div class="content__tag"><span>Tags:</span><ul class="content__tag__list"><li><a href="https://blog.vadrwave.ch/tags/aitm/" title="AiTM">AiTM</a></li><li><a href="https://blog.vadrwave.ch/tags/intune/" title="Security">Security</a></li></ul></div><div class="content__meta"><div class="content__meta__share"><h3>Share this:</h3></div></div></footer></div></div></article></main><footer class="footer section"><div class="footer__inner"><a class="logo footer__logo" href="https://blog.vadrwave.ch/"><img src="https://blog.vadrwave.ch/media/website/vadrwave_transparent-.png" alt="vadrwave.ch" width="1200" height="1200"></a><div class="footer__copyright"><p>Powered by Publii</p></div></div><button class="footer__bttop js-scroll-to-top" aria-label="Back to top" title="Back to top"><svg><use xlink:href="https://blog.vadrwave.ch/assets/svg/svg-map.svg#toparrow"/></svg></button></footer><script defer="defer" src="https://blog.vadrwave.ch/assets/js/scripts.min.js?v=b88caeaf07eb6f12c7594946785d5e9d"></script><script>window.publiiThemeMenuConfig = {    
+      mobileMenuMode: 'sidebar',
+      animationSpeed: 300,
+      submenuWidth: 'auto',
+      doubleClickTime: 500,
+      mobileMenuExpandableSubmenus: true, 
+      relatedContainerForOverlayMenuSelector: '.navbar',
+   };</script><script>var images = document.querySelectorAll('img[loading]');
+
+      for (var i = 0; i < images.length; i++) {
+         if (images[i].complete) {
+               images[i].classList.add('is-loaded');
+         } else {
+               images[i].addEventListener('load', function () {
+                  this.classList.add('is-loaded');
+               }, false);
+         }
+      }</script><script defer="defer" src="https://blog.vadrwave.ch/assets/js/photoswipe.min.js?v=017385b552f7e0d979e2e2fe6f324015"></script><script defer="defer" src="https://blog.vadrwave.ch/assets/js/photoswipe-ui-default.min.js?v=d067f0883540b1ddda0e2c9ad1b14260"></script><script>var initPhotoSwipeFromDOM=function(gallerySelector){var parseThumbnailElements=function(el){var thumbElements=el.childNodes,numNodes=thumbElements.length,items=[],figureEl,linkEl,size,item;for(var i=0;i<numNodes;i++){figureEl=thumbElements[i];if(figureEl.nodeType!==1){continue;}
+   linkEl=figureEl.children[0];size=linkEl.getAttribute('data-size').split('x');item={src:linkEl.getAttribute('href'),w:parseInt(size[0],10),h:parseInt(size[1],10)};if(figureEl.children.length>1){item.title=figureEl.children[1].innerHTML;}
+   if(linkEl.children.length>0){item.msrc=linkEl.children[0].getAttribute('src');}
+   item.el=figureEl;items.push(item);}
+   return items;};var closest=function closest(el,fn){return el&&(fn(el)?el:closest(el.parentNode,fn));};var onThumbnailsClick=function(e){e=e||window.event;e.preventDefault?e.preventDefault():e.returnValue=false;var eTarget=e.target||e.srcElement;var clickedListItem=closest(eTarget,function(el){return(el.tagName&&el.tagName.toUpperCase()==='FIGURE');});if(!clickedListItem){return;}
+   var clickedGallery=clickedListItem.parentNode,childNodes=clickedListItem.parentNode.childNodes,numChildNodes=childNodes.length,nodeIndex=0,index;for(var i=0;i<numChildNodes;i++){if(childNodes[i].nodeType!==1){continue;}
+   if(childNodes[i]===clickedListItem){index=nodeIndex;break;}
+   nodeIndex++;}
+   if(index>=0){openPhotoSwipe(index,clickedGallery);}
+   return false;};var photoswipeParseHash=function(){var hash=window.location.hash.substring(1),params={};if(hash.length<5){return params;}
+   var vars=hash.split('&');for(var i=0;i<vars.length;i++){if(!vars[i]){continue;}
+   var pair=vars[i].split('=');if(pair.length<2){continue;}
+   params[pair[0]]=pair[1];}
+   if(params.gid){params.gid=parseInt(params.gid,10);}
+   return params;};var openPhotoSwipe=function(index,galleryElement,disableAnimation,fromURL){var pswpElement=document.querySelectorAll('.pswp')[0],gallery,options,items;items=parseThumbnailElements(galleryElement);options={galleryUID:galleryElement.getAttribute('data-pswp-uid'),getThumbBoundsFn:function(index){var thumbnail=items[index].el.getElementsByTagName('img')[0],pageYScroll=window.pageYOffset||document.documentElement.scrollTop,rect=thumbnail.getBoundingClientRect();return{x:rect.left,y:rect.top+pageYScroll,w:rect.width};},
+   mainClass:'pswp--dark',
+   preload: [1,2],
+   hideAnimationDuration:200,
+   showAnimationDuration:0,
+   bgOpacity: 0.9,
+   showHideOpacity:true,
+   closeOnScroll: true,
+   arrowKeys: true,
+   closeEl: true,
+   captionEl: true,
+   fullscreenEl: true,
+   zoomEl: true,
+   shareEl: true,
+   counterEl: true,
+   arrowEl: true,
+   preloaderEl: true
+   };if(fromURL){if(options.galleryPIDs){for(var j=0;j<items.length;j++){if(items[j].pid==index){options.index=j;break;}}}else{options.index=parseInt(index,10)-1;}}else{options.index=parseInt(index,10);}
+   if(isNaN(options.index)){return;}
+   if(disableAnimation){options.showAnimationDuration=0;}
+   gallery=new PhotoSwipe(pswpElement,PhotoSwipeUI_Default,items,options);gallery.init();gallery.options.escKey=true;};var galleryElements=document.querySelectorAll(gallerySelector);for(var i=0,l=galleryElements.length;i<l;i++){galleryElements[i].setAttribute('data-pswp-uid',i+1);galleryElements[i].onclick=onThumbnailsClick;}
+   var hashData=photoswipeParseHash();if(hashData.pid&&hashData.gid){openPhotoSwipe(hashData.pid,galleryElements[hashData.gid-1],true,true);}};window.addEventListener('load', function () {initPhotoSwipeFromDOM('.gallery');}, false);</script><div class="pswp" tabindex="-1" role="dialog" aria-hidden="true"><div class="pswp__bg"></div><div class="pswp__scroll-wrap"><div class="pswp__container"><div class="pswp__item"></div><div class="pswp__item"></div><div class="pswp__item"></div></div><div class="pswp__ui pswp__ui--hidden"><div class="pswp__top-bar"><div class="pswp__counter"></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button><button class="pswp__button pswp__button--share" title="Share"></button><button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button><button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class="pswp__preloader"><div class="pswp__preloader__icn"><div class="pswp__preloader__cut"><div class="pswp__preloader__donut"></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class="pswp__share-tooltip"></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button><button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class="pswp__caption"><div class="pswp__caption__center"></div></div></div></div></div><script defer="defer" src="https://blog.vadrwave.ch/media/plugins/syntaxHighlighter/prism.js"></script><script defer="defer" src="https://blog.vadrwave.ch/media/plugins/syntaxHighlighter/prism-line-numbers.min.js"></script><script defer="defer" src="https://blog.vadrwave.ch/media/plugins/syntaxHighlighter/clipboard.min.js"></script><script defer="defer" src="https://blog.vadrwave.ch/media/plugins/syntaxHighlighter/prism-copy-to-clipboard.min.js"></script><script defer="defer" src="https://blog.vadrwave.ch/media/plugins/syntaxHighlighter/prism-inline-color.min.js"></script><script defer="defer" src="https://blog.vadrwave.ch/media/plugins/syntaxHighlighter/prism-autolinker.min.js"></script><script defer="defer" src="https://blog.vadrwave.ch/media/plugins/syntaxHighlighter/prism-show-invisibles.min.js"></script><script src="https://blog.vadrwave.ch/media/plugins/docSearch/docsearch.min.js"></script><script type="gdpr-blocker/functionality">docsearch({
+				container: '#docsearch',
+				appId: 'U8JFRG3H7G',
+				indexName: 'vadrwave',
+				apiKey: 'df2c4498152d151afd6690f5f62b1eaf',
+				debug: false
+			});</script><script type="text/javascript">document.body.addEventListener('publii-cookie-banner-unblock-functionality', function () {
+				document.getElementById('docsearch').style.display = '';
+			}, false);</script><div class="pcb" data-behaviour="badge" data-behaviour-link="#cookie-settings" data-revision="1" data-config-ttl="90" data-debug-mode="false"><div role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="pcb-title" aria-describedby="pcb-txt" class="pcb__banner"><div class="pcb__inner"><div id="pcb-title" role="heading" aria-level="2" class="pcb__title">This website uses cookies</div><div id="pcb-txt" class="pcb__txt">Select which cookies to opt-in to via the checkboxes below; our website uses cookies to examine site traffic and user activity while on our site, for marketing, and to provide social media functionality. <a href="https://blog.vadrwave.ch/about/">More details...</a></div><div class="pcb__buttons"><button type="button" class="pcb__btn pcb__btn--link pcb__btn--configure" aria-haspopup="dialog">Manage preferences</button> <button type="button" class="pcb__btn pcb__btn--reject">Reject</button> <button type="button" class="pcb__btn pcb__btn--solid pcb__btn--accept">Accept all</button></div></div></div><div class="pcb__popup" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="pcb-popup-title"><div class="pcb__popup__wrapper"><div class="pcb__inner pcb__popup__inner"><div class="pcb__popup__heading"><div id="pcb-popup-title" role="heading" aria-level="2" class="pcb__title">Cookie settings</div><button class="pcb__popup__close" aria-label="Close"></button></div><div class="pcb__popup__content"><div class="pcb__txt pcb__popup__txt">We use cookies to enhance your browsing experience, serve personalized ads or content, and analyze our traffic. By clicking "Accept All", you consent to our use of cookies. <a href="https://blog.vadrwave.ch/about/">More details...</a></div><ul class="pcb__groups"><li class="pcb__group"><details><summary class="pcb__group__title no-desc">Required</summary></details><div class="pcb__popup__switch is-checked"><input type="checkbox" data-group-name="" id="pcb-group-0" checked="checked"> <label for="pcb-group-0">Required</label></div></li><li class="pcb__group"><details><summary class="pcb__group__title no-desc">Analytics</summary></details><div class="pcb__popup__switch"><input type="checkbox" data-group-name="analytics" id="analytics-cookies"> <label for="analytics-cookies">Analytics</label></div></li><li class="pcb__group"><details><summary class="pcb__group__title no-desc">Functionality</summary></details><div class="pcb__popup__switch"><input type="checkbox" data-group-name="functionality" id="functionality-cookies"> <label for="functionality-cookies">Functionality</label></div></li></ul></div><div class="pcb__buttons pcb__popup__buttons"><button type="button" class="pcb__btn pcb__btn--solid pcb__btn--accept">Accept all</button> <button type="button" class="pcb__btn pcb__btn--reject">Reject all</button> <button type="button" class="pcb__btn pcb__btn--save">Save settings</button></div></div></div></div><div class="pcb__overlay" aria-hidden="true"></div><button class="pcb__badge" aria-label="Cookie Policy" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" width="40" height="40" viewBox="0 0 23 23" fill="currentColor"><path d="M21.41 12.71c-.08-.01-.15 0-.22 0h-.03c-.03 0-.05 0-.08.01-.07 0-.13.01-.19.04-.52.21-1.44.19-2.02-.22-.44-.31-.65-.83-.62-1.53a.758.758 0 0 0-.27-.61.73.73 0 0 0-.65-.14c-1.98.51-3.49.23-4.26-.78-.82-1.08-.73-2.89.24-4.49.14-.23.14-.52 0-.75a.756.756 0 0 0-.67-.36c-.64.03-1.11-.1-1.31-.35-.19-.26-.13-.71-.01-1.29.04-.18.06-.38.03-.59-.05-.4-.4-.7-.81-.66C5.1 1.54 1 6.04 1 11.48 1 17.28 5.75 22 11.6 22c5.02 0 9.39-3.54 10.39-8.42.08-.4-.18-.78-.58-.87Zm-9.81 7.82c-5.03 0-9.12-4.06-9.12-9.06 0-4.34 3.05-8 7.25-8.86-.08.7.05 1.33.42 1.81.24.32.66.67 1.38.84-.76 1.86-.65 3.78.36 5.11.61.81 2.03 2 4.95 1.51.18.96.71 1.54 1.18 1.87.62.43 1.38.62 2.1.62.05 0 .09 0 .13-.01-1.23 3.64-4.7 6.18-8.64 6.18ZM13 17c0 .55-.45 1-1 1s-1-.45-1-1 .45-1 1-1 1 .45 1 1Zm5.29-12.3a.99.99 0 0 1-.29-.71c0-.55.45-.99 1-.99a1 1 0 0 1 .71.3c.19.19.29.44.29.71 0 .55-.45.99-1 .99a1 1 0 0 1-.71-.3ZM9 13.5c0 .83-.67 1.5-1.5 1.5S6 14.33 6 13.5 6.67 12 7.5 12s1.5.67 1.5 1.5Zm3.25.81a.744.744 0 0 1-.06-1.05c.28-.32.75-.34 1.05-.06.31.28.33.75.05 1.06-.15.16-.35.25-.56.25-.18 0-.36-.06-.5-.19ZM8.68 7.26c.41.37.44 1 .07 1.41-.2.22-.47.33-.75.33a.96.96 0 0 1-.67-.26c-.41-.37-.44-1-.07-1.41.37-.42 1-.45 1.41-.08Zm11.48 1.88c.18-.19.52-.19.7 0 .05.04.09.1.11.16.03.06.04.12.04.19 0 .13-.05.26-.15.35-.09.1-.22.15-.35.15s-.26-.05-.35-.15a.355.355 0 0 1-.11-.16.433.433 0 0 1-.04-.19c0-.13.05-.26.15-.35Zm-4.93-1.86a.75.75 0 1 1 1.059-1.06.75.75 0 0 1-1.059 1.06Z"/></svg></button></div><script>window.dataLayer = window.dataLayer || [];
+                function gtag() { dataLayer.push(arguments); }
+
+                window.publiiCBGCM = {
+                    defaultState: {"ad_storage":true,"ad_personalization":true,"ad_user_data":true,"analytics_storage":true,"personalization_storage":true,"functionality_storage":true,"security_storage":true},
+                    groups: [{"cookieGroup":"analytics","ad_storage":true,"ad_personalization":true,"ad_user_data":true,"analytics_storage":true,"personalization_storage":false,"functionality_storage":false,"security_storage":false},{"cookieGroup":"functionality","ad_storage":false,"ad_personalization":false,"ad_user_data":false,"analytics_storage":false,"personalization_storage":false,"functionality_storage":true,"security_storage":true}]
+                };
+            
+            (function(win) {
+    if (!document.querySelector('.pcb')) {
+        return;
+    }
+
+    var cbConfig = {
+        behaviour: document.querySelector('.pcb').getAttribute('data-behaviour'),
+        behaviourLink: document.querySelector('.pcb').getAttribute('data-behaviour-link'),
+        revision: document.querySelector('.pcb').getAttribute('data-revision'),
+        configTTL: parseInt(document.querySelector('.pcb').getAttribute('data-config-ttl'), 10),
+        debugMode: document.querySelector('.pcb').getAttribute('data-debug-mode') === 'true',
+        initialState: null,
+        initialLsState: null,
+        previouslyAccepted: []
+    };
+
+    var cbUI = {
+        wrapper: document.querySelector('.pcb'),
+        banner: {
+            element: null,
+            btnAccept: null,
+            btnReject: null,
+            btnConfigure: null
+        },
+        popup: {
+            element: null,
+            btnClose: null,
+            btnSave: null,
+            btnAccept: null,
+            btnReject: null,
+            checkboxes: null,
+        },
+        overlay: null,
+        badge: null,
+        blockedScripts: document.querySelectorAll('script[type^="gdpr-blocker/"]'),
+        triggerLinks: cbConfig.behaviourLink ? document.querySelectorAll('a[href*="' + cbConfig.behaviourLink + '"]') : null
+    };
+
+    function initUI () {
+        // setup banner elements
+        cbUI.banner.element = cbUI.wrapper.querySelector('.pcb__banner');
+        cbUI.banner.btnAccept = cbUI.banner.element.querySelector('.pcb__btn--accept');
+        cbUI.banner.btnReject = cbUI.banner.element.querySelector('.pcb__btn--reject');
+        cbUI.banner.btnConfigure = cbUI.banner.element.querySelector('.pcb__btn--configure');
+
+        // setup popup elements
+        if (cbUI.wrapper.querySelector('.pcb__popup')) {
+            cbUI.popup.element = cbUI.wrapper.querySelector('.pcb__popup');
+            cbUI.popup.btnClose = cbUI.wrapper.querySelector('.pcb__popup__close');
+            cbUI.popup.btnSave = cbUI.popup.element.querySelector('.pcb__btn--save');
+            cbUI.popup.btnAccept = cbUI.popup.element.querySelector('.pcb__btn--accept');
+            cbUI.popup.btnReject = cbUI.popup.element.querySelector('.pcb__btn--reject');
+            cbUI.popup.checkboxes = cbUI.popup.element.querySelector('input[type="checkbox"]');
+            // setup overlay
+            cbUI.overlay = cbUI.wrapper.querySelector('.pcb__overlay');
+        }
+
+        cbUI.badge = cbUI.wrapper.querySelector('.pcb__badge');
+
+        if (cbConfig.behaviour.indexOf('link') > -1) {
+            for (var i = 0; i < cbUI.triggerLinks.length; i++) {
+                cbUI.triggerLinks[i].addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showBannerOrPopup();
+                });
+            }
+        }
+    }
+
+    function initState () {
+        var lsKeyName = getConfigName();
+        var currentConfig = localStorage.getItem(lsKeyName);
+        var configIsFresh = checkIfConfigIsFresh();
+
+        if (!configIsFresh || currentConfig === null) {
+            if (cbConfig.debugMode) {
+                console.log('🍪 Config not found, or configuration expired');
+            }
+
+            if (window.publiiCBGCM) {
+                gtag('consent', 'default', {
+                    'ad_storage': window.publiiCBGCM.defaultState.ad_storage ? 'granted' : 'denied',
+                    'ad_personalization': window.publiiCBGCM.defaultState.ad_personalization ? 'granted' : 'denied',
+                    'ad_user_data': window.publiiCBGCM.defaultState.ad_user_data ? 'granted' : 'denied',
+                    'analytics_storage': window.publiiCBGCM.defaultState.analytics_storage ? 'granted' : 'denied',
+                    'personalization_storage': window.publiiCBGCM.defaultState.personalization_storage ? 'granted' : 'denied',
+                    'functionality_storage': window.publiiCBGCM.defaultState.functionality_storage ? 'granted' : 'denied',
+                    'security_storage': window.publiiCBGCM.defaultState.security_storage ? 'granted' : 'denied'
+                });  
+                
+                if (cbConfig.debugMode) {
+                    console.log('🍪 GCMv2 DEFAULT STATE: ' + JSON.stringify({
+                        'ad_storage': window.publiiCBGCM.defaultState.ad_storage ? 'granted' : 'denied',
+                        'ad_personalization': window.publiiCBGCM.defaultState.ad_personalization ? 'granted' : 'denied',
+                        'ad_user_data': window.publiiCBGCM.defaultState.ad_user_data ? 'granted' : 'denied',
+                        'analytics_storage': window.publiiCBGCM.defaultState.analytics_storage ? 'granted' : 'denied',
+                        'personalization_storage': window.publiiCBGCM.defaultState.personalization_storage ? 'granted' : 'denied',
+                        'functionality_storage': window.publiiCBGCM.defaultState.functionality_storage ? 'granted' : 'denied',
+                        'security_storage': window.publiiCBGCM.defaultState.security_storage ? 'granted' : 'denied'
+                    }));
+                }
+            }
+
+            showBanner();
+        } else if (typeof currentConfig === 'string') {
+            if (cbConfig.debugMode) {
+                console.log('🍪 Config founded');
+            }
+
+            cbConfig.initialLsState = currentConfig.split(',');
+
+            if (window.publiiCBGCM) {
+                gtag('consent', 'default', {
+                    'ad_storage': getDefaultConsentState(currentConfig, 'ad_storage'),
+                    'ad_personalization': getDefaultConsentState(currentConfig, 'ad_personalization'),
+                    'ad_user_data': getDefaultConsentState(currentConfig, 'ad_user_data'),
+                    'analytics_storage': getDefaultConsentState(currentConfig, 'analytics_storage'),
+                    'personalization_storage': getDefaultConsentState(currentConfig, 'personalization_storage'),
+                    'functionality_storage': getDefaultConsentState(currentConfig, 'functionality_storage'),
+                    'security_storage': getDefaultConsentState(currentConfig, 'security_storage')
+                });
+                
+                if (cbConfig.debugMode) {
+                    console.log('🍪 GCMv2 DEFAULT STATE: ' + JSON.stringify({
+                        'ad_storage': getDefaultConsentState(currentConfig, 'ad_storage'),
+                        'ad_personalization': getDefaultConsentState(currentConfig, 'ad_personalization'),
+                        'ad_user_data': getDefaultConsentState(currentConfig, 'ad_user_data'),
+                        'analytics_storage': getDefaultConsentState(currentConfig, 'analytics_storage'),
+                        'personalization_storage': getDefaultConsentState(currentConfig, 'personalization_storage'),
+                        'functionality_storage': getDefaultConsentState(currentConfig, 'functionality_storage'),
+                        'security_storage': getDefaultConsentState(currentConfig, 'security_storage')
+                    }));
+                }
+            }
+
+            showBadge();
+
+            if (cbUI.popup.element) {
+                var allowedGroups = currentConfig.split(',');
+                var checkedCheckboxes = cbUI.popup.element.querySelectorAll('input[type="checkbox"]:checked');
+
+                for (var j = 0; j < checkedCheckboxes.length; j++) {
+                    var name = checkedCheckboxes[j].getAttribute('data-group-name');
+
+                    if (name && name !== '-' && allowedGroups.indexOf(name) === -1) {
+                        checkedCheckboxes[j].checked = false;
+                    }
+                }
+
+                for (var i = 0; i < allowedGroups.length; i++) {
+                    var checkbox = cbUI.popup.element.querySelector('input[type="checkbox"][data-group-name="' + allowedGroups[i] + '"]');
+
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+
+                    allowCookieGroup(allowedGroups[i]);
+                }
+            }
+        }
+
+        setTimeout(function () {
+            cbConfig.initialState = getInitialStateOfConsents();
+        }, 0);
+    }
+
+    function checkIfConfigIsFresh () {
+        var lastConfigSave = localStorage.getItem('publii-gdpr-cookies-config-save-date');
+
+        if (lastConfigSave === null) {
+            return false;
+        }
+
+        lastConfigSave = parseInt(lastConfigSave, 10);
+
+        if (lastConfigSave === 0) {
+            return true;
+        }
+
+        if (+new Date() - lastConfigSave < cbConfig.configTTL * 24 * 60 * 60 * 1000) {
+            return true;
+        }
+
+        return false;
+    }
+
+    function getDefaultConsentState (currentConfig, consentGroup) {
+        let configGroups = currentConfig.split(',');
+
+        for (let i = 0; i < configGroups.length; i++) {
+            let groupName = configGroups[i];
+            let group = window.publiiCBGCM.groups.find(group => group.cookieGroup === groupName);
+
+            if (group && group[consentGroup]) {
+                return 'granted';
+            }
+        }  
+        
+        if (window.publiiCBGCM.defaultState[consentGroup]) {
+            return 'granted'; 
+        }
+        
+        return 'denied';
+    }
+
+    function initBannerEvents () {
+        cbUI.banner.btnAccept.addEventListener('click', function (e) {
+            e.preventDefault();
+            acceptAllCookies('banner');
+            showBadge();
+        }, false);
+
+        if (cbUI.banner.btnReject) {
+            cbUI.banner.btnReject.addEventListener('click', function (e) {
+                e.preventDefault();
+                rejectAllCookies();
+                showBadge();
+            }, false);
+        }
+
+        if (cbUI.banner.btnConfigure) {
+            cbUI.banner.btnConfigure.addEventListener('click', function (e) {
+                e.preventDefault();
+                hideBanner();
+                showAdvancedPopup();
+                showBadge();
+            }, false);
+        }
+    }
+
+    function initPopupEvents () {
+        if (!cbUI.popup.element) {
+            return;
+        }
+
+        cbUI.overlay.addEventListener('click', function (e) {
+            hideAdvancedPopup();
+        }, false);
+
+        cbUI.popup.element.addEventListener('click', function (e) {
+            e.stopPropagation();
+        }, false);
+
+        cbUI.popup.btnAccept.addEventListener('click', function (e) {
+            e.preventDefault();
+            acceptAllCookies('popup');
+        }, false);
+
+        cbUI.popup.btnReject.addEventListener('click', function (e) {
+            e.preventDefault();
+            rejectAllCookies();
+        }, false);
+
+        cbUI.popup.btnSave.addEventListener('click', function (e) {
+            e.preventDefault();
+            saveConfiguration();
+        }, false);
+
+        cbUI.popup.btnClose.addEventListener('click', function (e) {
+            e.preventDefault();
+            hideAdvancedPopup();
+        }, false);
+    }
+
+    function initBadgeEvents () {
+        if (!cbUI.badge) {
+            return;
+        }
+
+        cbUI.badge.addEventListener('click', function (e) {
+            showBannerOrPopup();
+        }, false);
+    }
+
+    initUI();
+    initState();
+    initBannerEvents();
+    initPopupEvents();
+    initBadgeEvents();
+
+    /**
+     * API
+     */
+    function addScript (src, inline) {
+        var newScript = document.createElement('script');
+
+        if (src) {
+            newScript.setAttribute('src', src);
+        }
+
+        if (inline) {
+            newScript.text = inline;
+        }
+
+        document.body.appendChild(newScript);
+    }
+
+    function allowCookieGroup (allowedGroup) {
+        var scripts = document.querySelectorAll('script[type="gdpr-blocker/' + allowedGroup + '"]');
+        cbConfig.previouslyAccepted.push(allowedGroup);
+    
+        for (var j = 0; j < scripts.length; j++) {
+            addScript(scripts[j].src, scripts[j].text);
+        }
+
+        var groupEvent = new Event('publii-cookie-banner-unblock-' + allowedGroup);
+        document.body.dispatchEvent(groupEvent);
+        unlockEmbeds(allowedGroup);
+
+        if (cbConfig.debugMode) {
+            console.log('🍪 Allowed group: ' + allowedGroup);
+        }
+
+        if (window.publiiCBGCM && cbConfig.initialLsState.indexOf(allowedGroup) === -1) {
+            let consentResult = {};
+            let group = window.publiiCBGCM.groups.find(group => group.cookieGroup === allowedGroup);
+
+            if (group) {
+                let foundSomeConsents = false;
+
+                Object.keys(group).forEach(key => {
+                    if (key !== 'cookieGroup' && group[key] === true) {
+                        consentResult[key] = 'granted';
+                        foundSomeConsents = true;
+                    }
+                });
+
+                if (foundSomeConsents) {
+                    gtag('consent', 'update', consentResult);   
+
+                    if (cbConfig.debugMode) {
+                        console.log('🍪 GCMv2 UPDATE: ' + JSON.stringify(consentResult));
+                    }
+                }
+            }
+        }
+    }
+
+    function showBannerOrPopup () {
+        if (cbUI.popup.element) {
+            showAdvancedPopup();
+        } else {
+            showBanner();
+        }
+    }
+
+    function showAdvancedPopup () {
+        cbUI.popup.element.classList.add('is-visible');
+        cbUI.overlay.classList.add('is-visible');
+        cbUI.popup.element.setAttribute('aria-hidden', 'false');
+        cbUI.overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideAdvancedPopup () {
+        cbUI.popup.element.classList.remove('is-visible');
+        cbUI.overlay.classList.remove('is-visible');
+        cbUI.popup.element.setAttribute('aria-hidden', 'true');
+        cbUI.overlay.setAttribute('aria-hidden', 'true');
+    }
+
+    function showBanner () {
+        cbUI.banner.element.classList.add('is-visible');
+        cbUI.banner.element.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideBanner () {
+        cbUI.banner.element.classList.remove('is-visible');
+        cbUI.banner.element.setAttribute('aria-hidden', 'true');
+    }
+
+    function showBadge () {
+        if (!cbUI.badge) {
+            return;
+        }
+
+        cbUI.badge.classList.add('is-visible');
+        cbUI.badge.setAttribute('aria-hidden', 'false');
+    }
+
+    function getConfigName () {
+        var lsKeyName = 'publii-gdpr-allowed-cookies';
+
+        if (cbConfig.revision) {
+            lsKeyName = lsKeyName + '-v' + parseInt(cbConfig.revision, 10);
+        }
+
+        return lsKeyName;
+    }
+
+    function storeConfiguration (allowedGroups) {
+        var lsKeyName = getConfigName();
+        var dataToStore = allowedGroups.join(',');
+        localStorage.setItem(lsKeyName, dataToStore);
+
+        if (cbConfig.configTTL === 0) {
+            localStorage.setItem('publii-gdpr-cookies-config-save-date', 0);
+
+            if (cbConfig.debugMode) {
+                console.log('🍪 Store never expiring configuration');
+            }
+        } else {
+            localStorage.setItem('publii-gdpr-cookies-config-save-date', +new Date());
+        }
+    }
+
+    function getInitialStateOfConsents () {
+        if (!cbUI.popup.element) {
+            return [];
+        }
+
+        var checkedGroups = cbUI.popup.element.querySelectorAll('input[type="checkbox"]:checked');
+        var groups = [];
+
+        for (var i = 0; i < checkedGroups.length; i++) {
+            var allowedGroup = checkedGroups[i].getAttribute('data-group-name');
+
+            if (allowedGroup !== '') {
+                groups.push(allowedGroup);
+            }
+        }
+
+        if (cbConfig.debugMode) {
+            console.log('🍪 Initial state: ' + groups.join(', '));
+        }
+
+        return groups;
+    }
+
+    function getCurrentStateOfConsents () {
+        if (!cbUI.popup.element) {
+            return [];
+        }
+
+        var checkedGroups = cbUI.popup.element.querySelectorAll('input[type="checkbox"]:checked');
+        var groups = [];
+
+        for (var i = 0; i < checkedGroups.length; i++) {
+            var allowedGroup = checkedGroups[i].getAttribute('data-group-name');
+
+            if (allowedGroup !== '') {
+                groups.push(allowedGroup);
+            }
+        }
+
+        if (cbConfig.debugMode) {
+            console.log('🍪 State to save: ' + groups.join(', '));
+        }
+
+        return groups;
+    }
+
+    function getAllGroups () {
+        if (!cbUI.popup.element) {
+            return [];
+        }
+
+        var checkedGroups = cbUI.popup.element.querySelectorAll('input[type="checkbox"]');
+        var groups = [];
+
+        for (var i = 0; i < checkedGroups.length; i++) {
+            var allowedGroup = checkedGroups[i].getAttribute('data-group-name');
+
+            if (allowedGroup !== '') {
+                groups.push(allowedGroup);
+            }
+        }
+
+        return groups;
+    }
+
+    function acceptAllCookies (source) {
+        var groupsToAccept = getAllGroups();
+        storeConfiguration(groupsToAccept);
+
+        for (var i = 0; i < groupsToAccept.length; i++) {
+            var group = groupsToAccept[i];
+
+            if (cbConfig.initialState.indexOf(group) > -1 || cbConfig.previouslyAccepted.indexOf(group) > -1) {
+                if (cbConfig.debugMode) {
+                    console.log('🍪 Skip previously activated group: ' + group);
+                }
+
+                continue;
+            }
+
+            allowCookieGroup(group);
+        }
+
+        if (cbUI.popup.element) {
+            var checkboxesToCheck = cbUI.popup.element.querySelectorAll('input[type="checkbox"]');
+
+            for (var j = 0; j < checkboxesToCheck.length; j++) {
+                checkboxesToCheck[j].checked = true;
+            }
+        }
+
+        if (cbConfig.debugMode) {
+            console.log('🍪 Accept all cookies: ', groupsToAccept.join(', '));
+        }
+
+        if (source === 'popup') {
+            hideAdvancedPopup();
+        } else if (source === 'banner') {
+            hideBanner();
+        }
+    }
+
+    function rejectAllCookies () {
+        if (cbConfig.debugMode) {
+            console.log('🍪 Reject all cookies');
+        }
+
+        storeConfiguration([]);
+        setTimeout(function () {
+            window.location.reload();
+        }, 100);
+    }
+
+    function saveConfiguration () {
+        var groupsToAccept = getCurrentStateOfConsents();
+        storeConfiguration(groupsToAccept);
+
+        if (cbConfig.debugMode) {
+            console.log('🍪 Save new config: ', groupsToAccept.join(', '));
+        }
+
+        if (reloadIsNeeded(groupsToAccept)) {
+            setTimeout(function () {
+                window.location.reload();
+            }, 100);
+            return;
+        }
+
+        for (var i = 0; i < groupsToAccept.length; i++) {
+            var group = groupsToAccept[i];
+
+            if (cbConfig.initialState.indexOf(group) > -1 || cbConfig.previouslyAccepted.indexOf(group) > -1) {
+                if (cbConfig.debugMode) {
+                    console.log('🍪 Skip previously activated group: ' + group);
+                }
+
+                continue;
+            }
+
+            allowCookieGroup(group);
+        }
+
+        hideAdvancedPopup();
+    }
+
+    function reloadIsNeeded (groupsToAccept) {
+        // check if user rejected consent for initial groups
+        var initialGroups = cbConfig.initialState;
+        var previouslyAcceptedGroups = cbConfig.previouslyAccepted;
+        var groupsToCheck = initialGroups.concat(previouslyAcceptedGroups);
+
+        for (var i = 0; i < groupsToCheck.length; i++) {
+            var groupToCheck = groupsToCheck[i];
+
+            if (groupToCheck !== '' && groupsToAccept.indexOf(groupToCheck) === -1) {
+                if (cbConfig.debugMode) {
+                    console.log('🍪 Reload is needed due lack of: ', groupToCheck);
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    function unlockEmbeds (cookieGroup) {
+        var iframesToUnlock = document.querySelectorAll('.pec-wrapper[data-consent-group-id="' + cookieGroup + '"]');
+
+        for (var i = 0; i < iframesToUnlock.length; i++) {
+            var iframeWrapper = iframesToUnlock[i];
+            iframeWrapper.querySelector('.pec-overlay').classList.remove('is-active');
+            iframeWrapper.querySelector('.pec-overlay').setAttribute('aria-hidden', 'true');
+            var iframe = iframeWrapper.querySelector('iframe');
+            iframe.setAttribute('src', iframe.getAttribute('data-consent-src'));
+        }
+    }
+
+    win.publiiEmbedConsentGiven = function (cookieGroup) {
+        // it will unlock embeds
+        allowCookieGroup(cookieGroup);
+
+        var checkbox = cbUI.popup.element.querySelector('input[type="checkbox"][data-group-name="' + cookieGroup + '"]');
+
+        if (checkbox) {
+            checkbox.checked = true;
+        }
+
+        var groupsToAccept = getCurrentStateOfConsents();
+        storeConfiguration(groupsToAccept);
+
+        if (cbConfig.debugMode) {
+            console.log('🍪 Save new config: ', groupsToAccept.join(', '));
+        }
+    }
+})(window);</script></body></html>
