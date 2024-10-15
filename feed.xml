@@ -3,7 +3,7 @@
     <title>vadrwave.ch</title>
     <link href="https://blog.vadrwave.ch/feed.xml" rel="self" />
     <link href="https://blog.vadrwave.ch" />
-    <updated>2024-10-15T15:20:57+02:00</updated>
+    <updated>2024-10-15T15:26:39+02:00</updated>
     <author>
         <name>Roman</name>
     </author>
@@ -44,7 +44,7 @@
   </p>
 
   <p>
-    Before we can start we do have some
+    Before we can start we have to check the Requirement. 👌
   </p>
 
     <h3 id="requirementsandnbsp">
@@ -52,7 +52,7 @@
     </h3>
 
   <ul>
-    <ul><li>Azure Subscription</li><li>just a little knowledge of Azure and Ubuntu</li><li>a Domain for Testing</li><li>configurable DNS management</li><li>SSH&nbsp;</li></ul>
+    <ul><li>Azure Subscription</li><li>just a little knowledge of Azure and Ubuntu</li><li>a Domain for Testing</li><li>configurable DNS management</li><li>be able to SSH&nbsp;</li></ul>
   </ul>
 
     <h3 id="create-azure-virtual-machine">
