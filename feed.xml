@@ -3,7 +3,7 @@
     <title>vadrwave.ch</title>
     <link href="https://blog.vadrwave.ch/feed.xml" rel="self" />
     <link href="https://blog.vadrwave.ch" />
-    <updated>2024-10-04T17:41:41+02:00</updated>
+    <updated>2024-10-15T11:53:31+02:00</updated>
     <author>
         <name>Roman</name>
     </author>
@@ -18,12 +18,13 @@
         <id>https://blog.vadrwave.ch/aitm-detection-via-company-branding-custom-css/</id>
         <media:content url="https://blog.vadrwave.ch/media/posts/3/4a6efe57-4b9e-4089-93b5-c7760a7864f2-2.webp" medium="image" />
             <category term="Security"/>
+            <category term="AiTM"/>
 
         <updated>2024-10-04T17:41:21+02:00</updated>
             <summary>
                 <![CDATA[
                         <img src="https://blog.vadrwave.ch/media/posts/3/4a6efe57-4b9e-4089-93b5-c7760a7864f2-2.webp" alt="" />
-                    Phishing attempts targeting Microsoft 365 subscribers are rising quickly. Why? Targeting Microsoft is very appealing because it is used by many users and companies. Additionally, methods for getting around Multi-Factor Authentication (MFA) in phishing attacks are becoming more and more common (AiTM phishing attacks). Attackers&hellip;
+                    Phishing attempts targeting Microsoft 365 subscribers are rising quickly. Why? Targeting Microsoft is very appealing because it is used by many users and companies. Additionally, methods for getting around Multi-Factor Authentication (MFA) in phishing attacks are becoming more and more common (AiTM phishing attacks). Attackers can even access accounts that&hellip;
                 ]]>
             </summary>
         <content type="html">
@@ -31,7 +32,7 @@
                     <p><img src="https://blog.vadrwave.ch/media/posts/3/4a6efe57-4b9e-4089-93b5-c7760a7864f2-2.webp" class="type:primaryImage" alt="" /></p>
                 <p>Phishing attempts targeting Microsoft 365 subscribers are rising quickly. Why? Targeting Microsoft is very appealing because it is used by many users and companies. Additionally, methods for getting around Multi-Factor Authentication (MFA) in phishing attacks are becoming more and more common (AiTM phishing attacks). Attackers can even access accounts that are MFA-protected thanks to this. </p>
 <p>But what can we do about that?</p>
-<figure class="post__image post__image--center"><img loading="lazy"  src="https://blog.vadrwave.ch/media/posts/3/4a6efe57-4b9e-4089-93b5-c7760a7864f2.webp" alt="" width="487" height="487" sizes="(max-width: 1920px) 100vw, 1920px" srcset="https://blog.vadrwave.ch/media/posts/3/responsive/4a6efe57-4b9e-4089-93b5-c7760a7864f2-xs.webp 640w ,https://blog.vadrwave.ch/media/posts/3/responsive/4a6efe57-4b9e-4089-93b5-c7760a7864f2-sm.webp 768w ,https://blog.vadrwave.ch/media/posts/3/responsive/4a6efe57-4b9e-4089-93b5-c7760a7864f2-md.webp 1024w ,https://blog.vadrwave.ch/media/posts/3/responsive/4a6efe57-4b9e-4089-93b5-c7760a7864f2-lg.webp 1366w ,https://blog.vadrwave.ch/media/posts/3/responsive/4a6efe57-4b9e-4089-93b5-c7760a7864f2-xl.webp 1600w ,https://blog.vadrwave.ch/media/posts/3/responsive/4a6efe57-4b9e-4089-93b5-c7760a7864f2-2xl.webp 1920w"></figure>
+<figure class="post__image post__image--center"><img loading="lazy"  src="https://blog.vadrwave.ch/media/posts/3/4a6efe57-4b9e-4089-93b5-c7760a7864f2.webp" alt="" width="487" height="487" sizes="(max-width: 1200px) 100vw, 1200px" srcset="https://blog.vadrwave.ch/media/posts/3/responsive/4a6efe57-4b9e-4089-93b5-c7760a7864f2-xs.webp 300w ,https://blog.vadrwave.ch/media/posts/3/responsive/4a6efe57-4b9e-4089-93b5-c7760a7864f2-sm.webp 480w ,https://blog.vadrwave.ch/media/posts/3/responsive/4a6efe57-4b9e-4089-93b5-c7760a7864f2-md.webp 768w ,https://blog.vadrwave.ch/media/posts/3/responsive/4a6efe57-4b9e-4089-93b5-c7760a7864f2-xl.webp 1200w"></figure>
 <p>Its pretty simple 😎</p>
 <h1>AitM detection via company branding CSS</h1>
 <p><strong>But what does that mean?</strong></p>
@@ -40,11 +41,11 @@
 <h2 id="step-1-log-in-to-your-microsoft-tenant">Step 1: Log in to your Microsoft Tenant</h2>
 <p>Open your  web browser and go to the <a href="https://portal.azure.com/#view/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/~/LoginTenantBranding">Company Branding page</a> in the Azure Portal. Login with your tenants administrator account to visit the page.</p>
 <p>If no Company Branding is used within your tenant, click the <strong>Customize</strong> button to create it.</p>
-<figure class="post__image"><img loading="lazy"  src="https://blog.vadrwave.ch/media/posts/3/2024-10-04-16_54_42-padrunli-Microsoft-Azure-und-1-weitere-Seite-Profil-1-Microsoft-Edge.png" alt="" width="1976" height="838" sizes="(max-width: 1920px) 100vw, 1920px" srcset="https://blog.vadrwave.ch/media/posts/3/responsive/2024-10-04-16_54_42-padrunli-Microsoft-Azure-und-1-weitere-Seite-Profil-1-Microsoft-Edge-xs.png 640w ,https://blog.vadrwave.ch/media/posts/3/responsive/2024-10-04-16_54_42-padrunli-Microsoft-Azure-und-1-weitere-Seite-Profil-1-Microsoft-Edge-sm.png 768w ,https://blog.vadrwave.ch/media/posts/3/responsive/2024-10-04-16_54_42-padrunli-Microsoft-Azure-und-1-weitere-Seite-Profil-1-Microsoft-Edge-md.png 1024w ,https://blog.vadrwave.ch/media/posts/3/responsive/2024-10-04-16_54_42-padrunli-Microsoft-Azure-und-1-weitere-Seite-Profil-1-Microsoft-Edge-lg.png 1366w ,https://blog.vadrwave.ch/media/posts/3/responsive/2024-10-04-16_54_42-padrunli-Microsoft-Azure-und-1-weitere-Seite-Profil-1-Microsoft-Edge-xl.png 1600w ,https://blog.vadrwave.ch/media/posts/3/responsive/2024-10-04-16_54_42-padrunli-Microsoft-Azure-und-1-weitere-Seite-Profil-1-Microsoft-Edge-2xl.png 1920w"></figure>
+<figure class="post__image"><img loading="lazy"  src="https://blog.vadrwave.ch/media/posts/3/2024-10-04-16_54_42-padrunli-Microsoft-Azure-und-1-weitere-Seite-Profil-1-Microsoft-Edge.png" alt="" width="1976" height="838" sizes="(max-width: 1200px) 100vw, 1200px" srcset="https://blog.vadrwave.ch/media/posts/3/responsive/2024-10-04-16_54_42-padrunli-Microsoft-Azure-und-1-weitere-Seite-Profil-1-Microsoft-Edge-xs.png 300w ,https://blog.vadrwave.ch/media/posts/3/responsive/2024-10-04-16_54_42-padrunli-Microsoft-Azure-und-1-weitere-Seite-Profil-1-Microsoft-Edge-sm.png 480w ,https://blog.vadrwave.ch/media/posts/3/responsive/2024-10-04-16_54_42-padrunli-Microsoft-Azure-und-1-weitere-Seite-Profil-1-Microsoft-Edge-md.png 768w ,https://blog.vadrwave.ch/media/posts/3/responsive/2024-10-04-16_54_42-padrunli-Microsoft-Azure-und-1-weitere-Seite-Profil-1-Microsoft-Edge-xl.png 1200w"></figure>
 <h2 id="step-2-generate-a-personal-link">Step 2: Generate a personal link</h2>
 <p>In another browser tab, visit the official DSCM website at <a href="https://didsomeoneclone.me/">https://didsomeoneclone.me</a>. Enter the domain <strong>login.microsoftonline.com</strong> and your email in the sign-up form, and then wait a few seconds.</p>
 <p>You will receive an email containing your personal link. Click the <strong>Install Instructions</strong> button in the email. On the destination page, your personal link is displayed:</p>
-<figure class="post__image"><img loading="lazy"  src="https://blog.vadrwave.ch/media/posts/3/Screenshot-2024-10-04-165927.png" alt="" width="965" height="349" sizes="(max-width: 1920px) 100vw, 1920px" srcset="https://blog.vadrwave.ch/media/posts/3/responsive/Screenshot-2024-10-04-165927-xs.png 640w ,https://blog.vadrwave.ch/media/posts/3/responsive/Screenshot-2024-10-04-165927-sm.png 768w ,https://blog.vadrwave.ch/media/posts/3/responsive/Screenshot-2024-10-04-165927-md.png 1024w ,https://blog.vadrwave.ch/media/posts/3/responsive/Screenshot-2024-10-04-165927-lg.png 1366w ,https://blog.vadrwave.ch/media/posts/3/responsive/Screenshot-2024-10-04-165927-xl.png 1600w ,https://blog.vadrwave.ch/media/posts/3/responsive/Screenshot-2024-10-04-165927-2xl.png 1920w"></figure>
+<figure class="post__image"><img loading="lazy"  src="https://blog.vadrwave.ch/media/posts/3/Screenshot-2024-10-04-165927.png" alt="" width="965" height="349" sizes="(max-width: 1200px) 100vw, 1200px" srcset="https://blog.vadrwave.ch/media/posts/3/responsive/Screenshot-2024-10-04-165927-xs.png 300w ,https://blog.vadrwave.ch/media/posts/3/responsive/Screenshot-2024-10-04-165927-sm.png 480w ,https://blog.vadrwave.ch/media/posts/3/responsive/Screenshot-2024-10-04-165927-md.png 768w ,https://blog.vadrwave.ch/media/posts/3/responsive/Screenshot-2024-10-04-165927-xl.png 1200w"></figure>
 <h2 id="step-3-create-the-css-template-file">Step 3: Create the CSS template file</h2>
 <p>Now it’s time to create a CSS file. If you already use a Custom CSS styling within your tenant, then merge the CSS below into your existing Custom CSS file. Otherwise, you can simply create a new CSS file with the following content:</p>
 <pre class="language-css line-numbers"><code>.ext-sign-in-box {
@@ -53,7 +54,7 @@
 <p>Make sure to replace the <strong>&lt;YOURLINK&gt;</strong> value with the link that you obtained in step 2.</p>
 <h2 id="step-4-upload-the-css-file">Step 4: Upload the CSS file</h2>
 <p>The last step is uploading the file into the Azure Portal. Go back to the page opened at step 1, open the <strong>Layout</strong> tab, and navigate to the CSS file using the <strong>Browse</strong> button at the <strong>Custom CSS</strong> option.</p>
-<figure class="post__image"><img loading="lazy"  src="https://blog.vadrwave.ch/media/posts/3/2024-10-04-17_02_52-Customize-default-sign-in-experience-Microsoft-Azure-und-1-weitere-Seite-Pro.png" alt="" width="872" height="959" sizes="(max-width: 1920px) 100vw, 1920px" srcset="https://blog.vadrwave.ch/media/posts/3/responsive/2024-10-04-17_02_52-Customize-default-sign-in-experience-Microsoft-Azure-und-1-weitere-Seite-Pro-xs.png 640w ,https://blog.vadrwave.ch/media/posts/3/responsive/2024-10-04-17_02_52-Customize-default-sign-in-experience-Microsoft-Azure-und-1-weitere-Seite-Pro-sm.png 768w ,https://blog.vadrwave.ch/media/posts/3/responsive/2024-10-04-17_02_52-Customize-default-sign-in-experience-Microsoft-Azure-und-1-weitere-Seite-Pro-md.png 1024w ,https://blog.vadrwave.ch/media/posts/3/responsive/2024-10-04-17_02_52-Customize-default-sign-in-experience-Microsoft-Azure-und-1-weitere-Seite-Pro-lg.png 1366w ,https://blog.vadrwave.ch/media/posts/3/responsive/2024-10-04-17_02_52-Customize-default-sign-in-experience-Microsoft-Azure-und-1-weitere-Seite-Pro-xl.png 1600w ,https://blog.vadrwave.ch/media/posts/3/responsive/2024-10-04-17_02_52-Customize-default-sign-in-experience-Microsoft-Azure-und-1-weitere-Seite-Pro-2xl.png 1920w"></figure>
+<figure class="post__image"><img loading="lazy"  src="https://blog.vadrwave.ch/media/posts/3/2024-10-04-17_02_52-Customize-default-sign-in-experience-Microsoft-Azure-und-1-weitere-Seite-Pro.png" alt="" width="872" height="959" sizes="(max-width: 1200px) 100vw, 1200px" srcset="https://blog.vadrwave.ch/media/posts/3/responsive/2024-10-04-17_02_52-Customize-default-sign-in-experience-Microsoft-Azure-und-1-weitere-Seite-Pro-xs.png 300w ,https://blog.vadrwave.ch/media/posts/3/responsive/2024-10-04-17_02_52-Customize-default-sign-in-experience-Microsoft-Azure-und-1-weitere-Seite-Pro-sm.png 480w ,https://blog.vadrwave.ch/media/posts/3/responsive/2024-10-04-17_02_52-Customize-default-sign-in-experience-Microsoft-Azure-und-1-weitere-Seite-Pro-md.png 768w ,https://blog.vadrwave.ch/media/posts/3/responsive/2024-10-04-17_02_52-Customize-default-sign-in-experience-Microsoft-Azure-und-1-weitere-Seite-Pro-xl.png 1200w"></figure>
 <p>After saving you are good to go! Enjoy you new AiTM Phishing Protection!</p>
             ]]>
         </content>
@@ -65,16 +66,19 @@
         </author>
         <link href="https://blog.vadrwave.ch/the-scary-side-of-cybersecurity-halloween-edition/"/>
         <id>https://blog.vadrwave.ch/the-scary-side-of-cybersecurity-halloween-edition/</id>
+        <media:content url="https://blog.vadrwave.ch/media/posts/2/DALLE-2024-10-15-11.06.30-A-wide-illustration-of-the-biggest-cybersecurity-threats-featuring-various-elements-symbolizing-these-dangers.-The-central-focus-is-a-digital-globe-s.png" medium="image" />
             <category term="Security"/>
 
         <updated>2024-10-04T10:31:53+02:00</updated>
             <summary>
                 <![CDATA[
-                    Gather 'round, my unsuspecting victims, for a tale that will make your blood run cold and your Wi-Fi signal weak! In the quaint town of Cyberville, where smartphones chirped merrily and laptops hummed contentedly, a sinister force was about to be unleashed. It all began&hellip;
+                        <img src="https://blog.vadrwave.ch/media/posts/2/DALLE-2024-10-15-11.06.30-A-wide-illustration-of-the-biggest-cybersecurity-threats-featuring-various-elements-symbolizing-these-dangers.-The-central-focus-is-a-digital-globe-s.png" alt="" />
+                    Gather 'round, my unsuspecting victims, for a tale that will make your blood run cold and your Wi-Fi signal weak! In the quaint town of Cyberville, where smartphones chirped merrily and laptops hummed contentedly, a sinister force was about to be unleashed. It all began on a dark and stormy&hellip;
                 ]]>
             </summary>
         <content type="html">
             <![CDATA[
+                    <p><img src="https://blog.vadrwave.ch/media/posts/2/DALLE-2024-10-15-11.06.30-A-wide-illustration-of-the-biggest-cybersecurity-threats-featuring-various-elements-symbolizing-these-dangers.-The-central-focus-is-a-digital-globe-s.png" class="type:primaryImage" alt="" /></p>
                 <p>Gather 'round, my unsuspecting victims, for a tale that will make your blood run cold and your Wi-Fi signal weak! In the quaint town of Cyberville, where smartphones chirped merrily and laptops hummed contentedly, a sinister force was about to be unleashed.</p>
 <p>It all began on a dark and stormy night when young Hans Clickalot received a mysterious email. "You've won a free pumpkin spice latte!" it proclaimed. Excited, he clicked the link, unknowingly inviting the Phishing Phantom into his digital life. The ghostly figure cackled as it slipped through his screen, its hook-tipped fingers snatching his passwords like candy from a trick-or-treat bag.</p>
 <figure class="kg-card kg-image-card kg-card-hascaption"><figure class="kg-image"><img  src="https://vadrwave.ghost.io/content/images/2024/10/Phishing-1.png" sizes="(min-width: 720px) 720px" srcset="https://vadrwave.ghost.io/content/images/size/w600/2024/10/Phishing-1.png 600w, https://vadrwave.ghost.io/content/images/2024/10/Phishing-1.png 800w" alt="" width="800" height="600" loading="lazy" data-is-external-image="true"></figure>
