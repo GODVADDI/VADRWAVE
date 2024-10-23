@@ -3,7 +3,7 @@
     <title>vadrwave.ch</title>
     <link href="https://blog.vadrwave.ch/feed.xml" rel="self" />
     <link href="https://blog.vadrwave.ch" />
-    <updated>2024-10-23T13:57:51+02:00</updated>
+    <updated>2024-10-23T14:09:18+02:00</updated>
     <author>
         <name>Roman</name>
     </author>
@@ -188,11 +188,6 @@ phishlets enable microsoft365</code></pre>
 <br>
 <br>if everything worked right, congrats you are now logged in as the user you betrayed.
   </p>
-
-    <figure class="post__image post__image--center">
-      <img loading="lazy" src="" height="377" width="1057" alt=""  data-is-external-image="true">
-      
-    </figure>
 
     <figure class="post__image post__image--center">
       <img loading="lazy" src="https://blog.vadrwave.ch/media/posts/6/msedge_jAwMQruXiw.gif" height="629" width="1062" alt="" >
